@@ -1,0 +1,314 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap');
+
+:root {
+  --font-size: 16px;
+  --font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  
+  /* Pastel Pink Theme Colors - Soft & Aesthetic */
+  --background: #fff5f9;
+  --foreground: #5a1850;
+  --card: #ffffff;
+  --card-foreground: #5a1850;
+  --popover: #ffffff;
+  --popover-foreground: #5a1850;
+  --primary: #fda4c6;
+  --primary-foreground: #ffffff;
+  --secondary: #ffe8f0;
+  --secondary-foreground: #d91775;
+  --muted: #fff5f9;
+  --muted-foreground: #a8a29e;
+  --accent: #ffd1e3;
+  --accent-foreground: #9f1853;
+  --destructive: #fca5a5;
+  --destructive-foreground: #ffffff;
+  --border: #ffd1e3;
+  --input: transparent;
+  --input-background: #fff5f9;
+  --switch-background: #fce7f3;
+  --font-weight-medium: 500;
+  --font-weight-normal: 400;
+  --ring: #fda4c6;
+  
+  /* Pastel Pink Chart Colors - Soft Gradients */
+  --chart-1: #fda4c6;
+  --chart-2: #ffc0d9;
+  --chart-3: #ffd1e3;
+  --chart-4: #ffe8f0;
+  --chart-5: #fff5f9;
+  
+  --radius: 1rem;
+  
+  /* Pastel Pink Sidebar Colors - Soft & Welcoming */
+  --sidebar: #ffffff;
+  --sidebar-foreground: #5a1850;
+  --sidebar-primary: #fda4c6;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #ffe8f0;
+  --sidebar-accent-foreground: #9f1853;
+  --sidebar-border: #ffd1e3;
+  --sidebar-ring: #fda4c6;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-input-background: var(--input-background);
+  --color-switch-background: var(--switch-background);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family: var(--font-family);
+    -webkit-tap-highlight-color: rgba(253, 164, 198, 0.1);
+    -webkit-touch-callout: none;
+    overscroll-behavior: none;
+    background: linear-gradient(135deg, #fff5f9 0%, #ffe8f0 30%, #ffd1e3 70%, #ffc0d9 100%);
+    background-attachment: fixed;
+    letter-spacing: -0.01em;
+    font-feature-settings: 'kern' 1, 'liga' 1;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Better touch targets for mobile with elegant animations */
+  button, a, [role="button"] {
+    @apply touch-manipulation;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  button:active, a:active, [role="button"]:active {
+    transform: scale(0.97);
+  }
+
+  /* Smooth scrolling */
+  html {
+    scroll-behavior: smooth;
+  }
+
+  /* Smooth transitions for cards with elegant shadow and pink glow */
+  [class*="Card"], [class*="card"] {
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 1px 3px 0 rgba(253, 164, 198, 0.15), 0 1px 2px -1px rgba(253, 164, 198, 0.1);
+  }
+  
+  [class*="Card"]:hover, [class*="card"]:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px -3px rgba(253, 164, 198, 0.25), 0 4px 6px -4px rgba(253, 164, 198, 0.15);
+  }
+
+  /* Custom scrollbar for webkit browsers */
+  ::-webkit-scrollbar {
+    width: 0px;
+    height: 0px;
+    display: none;
+  }
+
+  ::-webkit-scrollbar-track {
+    display: none;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    display: none;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    display: none;
+  }
+
+  /* Hide scrollbar for Firefox */
+  * {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  /* Hide scrollbar for all browsers */
+  html, body {
+    overflow-y: auto;
+    overflow-x: hidden;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  html::-webkit-scrollbar,
+  body::-webkit-scrollbar {
+    display: none;
+  }
+  
+  /* Additional aesthetic enhancements */
+  input, textarea, select {
+    @apply rounded-xl;
+    transition: all 0.2s ease-in-out;
+  }
+  
+  input:focus, textarea:focus, select:focus {
+    box-shadow: 0 0 0 3px rgba(253, 164, 198, 0.2);
+    transform: translateY(-1px);
+  }
+
+  /* Mobile-friendly touch targets and optimizations */
+  @media (max-width: 768px) {
+    button, a[role="button"] {
+      min-height: 40px;
+    }
+
+    input[type="radio"], input[type="checkbox"] {
+      min-width: 22px;
+      min-height: 22px;
+    }
+
+    body {
+      font-size: 14px;
+    }
+
+    input, textarea, select {
+      font-size: 16px; /* Prevents zoom on iOS */
+    }
+  }
+
+  /* Smooth modal and dialog animations */
+  [role="dialog"], [role="alertdialog"] {
+    animation: fadeIn 0.2s ease-in-out;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  /* Beautiful shadows for elevated elements */
+  .shadow-glow {
+    box-shadow: 0 4px 20px rgba(253, 164, 198, 0.3);
+  }
+
+  .shadow-glow-lg {
+    box-shadow: 0 10px 40px rgba(253, 164, 198, 0.4);
+  }
+
+  /* Modified True/False underline styling */
+  .quiz-underline {
+    text-decoration: underline;
+    text-decoration-color: #fda4c6;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 4px;
+  }
+
+  /* Blank input for Modified True/False */
+  .blank-input {
+    display: inline-block;
+    border: none;
+    border-bottom: 2px solid #fda4c6;
+    background: white;
+    border-radius: 0;
+    padding: 2px 8px;
+    margin: 0 4px;
+    min-width: 120px;
+    transition: all 0.2s ease;
+  }
+
+  .blank-input:focus {
+    outline: none;
+    border-bottom-color: #fb7ba2;
+    box-shadow: 0 2px 4px rgba(253, 164, 198, 0.3);
+    transform: none;
+  }
+
+  /* Base typography */
+  h1 {
+    font-size: 1.5rem;
+    font-weight: 500;
+    line-height: 1.4;
+  }
+
+  h2 {
+    font-size: 1.25rem;
+    font-weight: 500;
+    line-height: 1.4;
+  }
+
+  h3 {
+    font-size: 1.125rem;
+    font-weight: 500;
+    line-height: 1.4;
+  }
+
+  h4 {
+    font-size: 1rem;
+    font-weight: 500;
+    line-height: 1.4;
+  }
+
+  p {
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.5;
+  }
+
+  label {
+    font-size: 0.875rem;
+    font-weight: 500;
+    line-height: 1.4;
+  }
+
+  button {
+    font-size: 0.875rem;
+    font-weight: 500;
+    line-height: 1.4;
+  }
+
+  input {
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.5;
+  }
+}
+
+html {
+  font-size: var(--font-size);
+  font-family: var(--font-family);
+}

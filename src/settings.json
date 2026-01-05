@@ -1,0 +1,98 @@
+{
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit"
+  },
+  "editor.tabSize": 2,
+  "editor.insertSpaces": true,
+  "editor.detectIndentation": false,
+  
+  "files.associations": {
+    "*.css": "tailwindcss"
+  },
+  
+  "tailwindCSS.experimental.classRegex": [
+    ["cva\\(([^)]*)\\)", "[\"'`]([^\"'`]*).*?[\"'`]"],
+    ["cn\\(([^)]*)\\)", "(?:'|\"|`)([^']*)(?:'|\"|`)"]
+  ],
+  
+  "tailwindCSS.includeLanguages": {
+    "typescript": "javascript",
+    "typescriptreact": "javascript"
+  },
+  
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "typescript.enablePromptUseWorkspaceTsdk": true,
+  
+  "emmet.includeLanguages": {
+    "javascript": "javascriptreact",
+    "typescript": "typescriptreact"
+  },
+  
+  "emmet.triggerExpansionOnTab": true,
+  
+  "eslint.validate": [
+    "javascript",
+    "javascriptreact",
+    "typescript",
+    "typescriptreact"
+  ],
+  
+  "prettier.enable": true,
+  "prettier.singleQuote": true,
+  "prettier.semi": true,
+  "prettier.trailingComma": "es5",
+  
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[typescriptreact]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[javascriptreact]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[json]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[css]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  
+  "files.exclude": {
+    "**/.git": true,
+    "**/.DS_Store": true,
+    "**/node_modules": true,
+    "**/dist": true
+  },
+  
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/dist": true,
+    "**/.vite": true,
+    "**/package-lock.json": true
+  },
+  
+  "javascript.updateImportsOnFileMove.enabled": "always",
+  "typescript.updateImportsOnFileMove.enabled": "always",
+  
+  "editor.quickSuggestions": {
+    "strings": true
+  },
+  
+  "css.validate": false,
+  "scss.validate": false,
+  
+  "files.trimTrailingWhitespace": true,
+  "files.insertFinalNewline": true,
+  
+  "git.confirmSync": false,
+  "git.autofetch": true,
+  
+  "explorer.confirmDragAndDrop": false,
+  "explorer.confirmDelete": false
+}
