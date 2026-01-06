@@ -343,15 +343,6 @@ export function Settings({
                     }
                   />
                 </div>
-                <div className="flex items-center justify-between py-0.5">
-                  <Label className="text-xs sm:text-sm">Sound Effects</Label>
-                  <Switch
-                    checked={settings.soundEffects}
-                    onCheckedChange={(checked: boolean) =>
-                      handleSettingChange('soundEffects', checked)
-                    }
-                  />
-                </div>
               </div>
             </div>
           </CardContent>

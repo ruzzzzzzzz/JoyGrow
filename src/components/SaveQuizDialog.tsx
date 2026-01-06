@@ -91,11 +91,12 @@ export function SaveQuizDialog({ open, onOpenChange, quizzes, onSave, studyMater
     }
   };
 
-  const finalCategory = selectedCategory === 'Other' ? customCategory : selectedCategory;
-  const canSave =
-    title.trim().length > 0 &&
-    description.trim().length > 0 &&
-    finalCategory.trim().length > 0;
+  const finalCategory =
+    selectedCategory === 'Other' ? customCategory : selectedCategory;
+
+const canSave =
+  title.trim().length > 0 &&
+  finalCategory.trim().length > 0; 
 
   const handleSave = () => {
     if (!canSave) return;
@@ -105,7 +106,7 @@ export function SaveQuizDialog({ open, onOpenChange, quizzes, onSave, studyMater
 
   const handleSkip = () => {
     onSkip();
-    onOpenChange(false);
+  onOpenChange(false);
   };
 
   return (

@@ -74,7 +74,7 @@ export function DashboardHeader({
   };
   
   return (
-    <div className="fixed top-0 left-0 right-0 z-40 flex items-center justify-between px-2 py-1.5 sm:px-3 sm:py-2 md:px-4 md:py-2 bg-white/95 backdrop-blur-lg border-b border-pink-100 shadow-sm">
+    <div className="fixed top-0 left-0 right-0 z-40 flex items-center justify-between px-3 py-3 sm:px-4 sm:py-3 md:px-6 md:py-4 bg-white/95 backdrop-blur-lg border-b border-pink-100 shadow-md">
       {/* Left side: Menu button + Logo + Name - Hidden on mobile */}
       <div className="hidden md:flex items-center gap-3">
         {/* Hamburger Menu Button */}

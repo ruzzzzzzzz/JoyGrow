@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { getOfflineModePref, setOfflineModePref } from '../utils/offline-pref-storage';
 
 interface NetworkStatus {
   isOnline: boolean;
@@ -20,17 +21,20 @@ export function useNetworkStatus(): NetworkStatus {
     window.addEventListener('online', handleOnline);
     window.addEventListener('offline', handleOffline);
 
-    // Get connection type if available
-    const connection = (navigator as any).connection || (navigator as any).mozConnection || (navigator as any).webkitConnection;
+    const connection =
+      (navigator as any).connection ||
+      (navigator as any).mozConnection ||
+      (navigator as any).webkitConnection;
+
     if (connection) {
       setConnectionType(connection.effectiveType || connection.type || 'unknown');
-      
+
       const updateConnection = () => {
         setConnectionType(connection.effectiveType || connection.type || 'unknown');
       };
-      
+
       connection.addEventListener('change', updateConnection);
-      
+
       return () => {
         window.removeEventListener('online', handleOnline);
         window.removeEventListener('offline', handleOffline);
@@ -44,17 +48,31 @@ export function useNetworkStatus(): NetworkStatus {
     };
   }, []);
 
-  // Load offline mode preference from localStorage
+  // Load offline mode preference from IndexedDB
   useEffect(() => {
-    const savedOfflineMode = localStorage.getItem('joygrow_offline_mode');
-    if (savedOfflineMode === 'true') {
-      setIsOfflineMode(true);
-    }
+    let cancelled = false;
+
+    getOfflineModePref()
+      .then((saved) => {
+        if (!cancelled && saved) {
+          setIsOfflineMode(true);
+        }
+      })
+      .catch(() => {
+        // ignore errors, default stays false
+      });
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   const setOfflineMode = (enabled: boolean) => {
     setIsOfflineMode(enabled);
-    localStorage.setItem('joygrow_offline_mode', enabled.toString());
+    // fire-and-forget write to IndexedDB
+    setOfflineModePref(enabled).catch(() => {
+      // ignore write errors; state is already updated
+    });
   };
 
   const effectivelyOffline = !isOnline || isOfflineMode;
@@ -64,6 +82,6 @@ export function useNetworkStatus(): NetworkStatus {
     isOfflineMode,
     connectionType,
     setOfflineMode,
-    effectivelyOffline
+    effectivelyOffline,
   };
 }

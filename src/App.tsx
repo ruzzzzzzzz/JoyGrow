@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback, lazy, Suspense } from 'react';
+import { OfflineDetector } from './components/OfflineDetector';
 import { DashboardHeader } from './components/DashboardHeader';
 import { Navigation, DesktopSidebar } from './components/Navigation';
 import { QuizGenerator } from './components/QuizGenerator';
@@ -1066,6 +1067,12 @@ const StudyMaterials = lazy(() =>
 
   return (
     <div className="min-h-screen bg-pink-50 overflow-x-hidden">
+      {effectivelyOffline && (
+        <div className="bg-amber-100 border-b border-amber-200 text-amber-900
+                        px-2 py-1 text-xs text-center">
+          Offline mode: using local data; will sync when online.
+        </div>
+      )}
       <DesktopSidebar
         currentView={currentView}
         onViewChange={setCurrentView}

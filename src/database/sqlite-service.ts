@@ -1,57 +1,43 @@
 // SQLite Service Layer for Offline Database
-import initSqlJs, { Database } from 'sql.js';
+import initSqlJs, { Database, SqlJsStatic } from 'sql.js';
 import sqliteSchema from './sqlite-schema.sql?raw';
-
-// use the shared IndexedDB helpers
 import { loadSQLiteFile, saveSQLiteFile } from './indexeddb-storage';
 
 class SQLiteService {
   private db: Database | null = null;
-  private SQL: any = null;
+  private SQL: SqlJsStatic | null = null;
   private initialized = false;
   private initPromise: Promise<void> | null = null;
 
   /**
-   * Initialize the SQLite database
+   * Initialize the SQLite database (idempotent)
    */
   async init(): Promise<void> {
-    if (this.initialized) {
-      return;
-    }
-
-    if (this.initPromise) {
-      return this.initPromise;
-    }
-
+    if (this.initialized) return;
+    if (this.initPromise) return this.initPromise;
     this.initPromise = this._init();
     return this.initPromise;
   }
 
   private async _init(): Promise<void> {
     try {
-      // Initialize SQL.js - load wasm from local assets instead of remote CDN
       this.SQL = await initSqlJs({
-        // IMPORTANT: ensure sql-wasm.wasm is copied to /public/sql-wasm.wasm
-        locateFile: (file) => `/sql-wasm.wasm`,
+        // ensure sql-wasm.wasm is available at /sql-wasm.wasm (public/)
+        locateFile: () => `/sql-wasm.wasm`,
       });
 
-      // Try to load existing database from IndexedDB
       const savedDb = await loadSQLiteFile();
 
       if (savedDb) {
-        this.db = new this.SQL!.Database(savedDb);
+        this.db = new this.SQL.Database(savedDb);
         console.log('✅ SQLite database loaded from IndexedDB');
       } else {
-        // Create new database
-        this.db = new this.SQL!.Database();
-        // Run schema initialization
-        this.db!.exec(sqliteSchema);
-        // Save to IndexedDB
+        this.db = new this.SQL.Database();
+        this.db.exec(sqliteSchema);
         await this.save();
         console.log('✅ SQLite database created and initialized');
       }
 
-      // Optional: clear old localStorage snapshot if present
       try {
         localStorage.removeItem('joygrow_sqlite_db');
       } catch {
@@ -61,6 +47,10 @@ class SQLiteService {
       this.initialized = true;
     } catch (error) {
       console.error('Failed to initialize SQLite:', error);
+      this.db = null;
+      this.SQL = null;
+      this.initialized = false;
+      this.initPromise = null;
       throw error;
     }
   }
@@ -73,9 +63,8 @@ class SQLiteService {
       console.error('Database not initialized');
       return;
     }
-
     try {
-      const data = this.db.export(); // Uint8Array
+      const data = this.db.export();
       await saveSQLiteFile(data);
     } catch (error) {
       console.error('Failed to save database:', error);
@@ -83,16 +72,15 @@ class SQLiteService {
   }
 
   /**
-   * Execute a SQL query
+   * Execute a SQL query (read/write) and auto-save
    */
-  async exec(sql: string, params?: any[]): Promise<any[]> {
+  async exec(sql: string, params: any[] = []): Promise<any[]> {
     if (!this.db) {
       throw new Error('Database not initialized. Call init() first.');
     }
-
     try {
       const results = this.db.exec(sql, params);
-      await this.save(); // Auto-save after each operation
+      await this.save();
       return results;
     } catch (error) {
       console.error('SQL execution error:', error);
@@ -101,25 +89,21 @@ class SQLiteService {
   }
 
   /**
-   * Run a query and return results as objects
-   *
-   * NOTE: does not auto-save, only reads.
+   * Run a read-only query and return results as objects
    */
-  query<T = any>(sql: string, params?: any[]): T[] {
+  query<T = any>(sql: string, params: any[] = []): T[] {
     if (!this.db) {
       throw new Error('Database not initialized. Call init() first.');
     }
-
     try {
       const stmt = this.db.prepare(sql);
-      if (params) {
+      if (params && params.length > 0) {
         stmt.bind(params);
       }
 
       const results: T[] = [];
       while (stmt.step()) {
-        const row = stmt.getAsObject();
-        results.push(row as T);
+        results.push(stmt.getAsObject() as T);
       }
       stmt.free();
 
@@ -133,19 +117,18 @@ class SQLiteService {
   /**
    * Run a query and return a single result
    */
-  queryOne<T = any>(sql: string, params?: any[]): T | null {
+  queryOne<T = any>(sql: string, params: any[] = []): T | null {
     const results = this.query<T>(sql, params);
     return results.length > 0 ? results[0] : null;
   }
 
   /**
-   * Run a query that modifies data (INSERT, UPDATE, DELETE)
+   * Run a write query (INSERT/UPDATE/DELETE) and auto-save
    */
-  async run(sql: string, params?: any[]): Promise<void> {
+  async run(sql: string, params: any[] = []): Promise<void> {
     if (!this.db) {
       throw new Error('Database not initialized. Call init() first.');
     }
-
     try {
       this.db.run(sql, params);
       await this.save();
@@ -156,32 +139,26 @@ class SQLiteService {
   }
 
   /**
-   * Generate a UUID v4
+   * Generate a UUID v4 (not crypto-strong, but fine for local ids)
    */
   generateId(): string {
-    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
       const r = (Math.random() * 16) | 0;
       const v = c === 'x' ? r : (r & 0x3) | 0x8;
       return v.toString(16);
     });
   }
 
-  /**
-   * Convert boolean to SQLite integer
-   */
   boolToInt(value: boolean): number {
     return value ? 1 : 0;
   }
 
-  /**
-   * Convert SQLite integer to boolean
-   */
   intToBool(value: number): boolean {
     return value === 1;
   }
 
   /**
-   * Clear all data from database (useful for logout/reset)
+   * Clear all user-scoped data (for logout)
    */
   async clearUserData(userId: string): Promise<void> {
     const tables = [
@@ -203,53 +180,44 @@ class SQLiteService {
   }
 
   /**
-   * Reset the entire database (WARNING: Deletes all data)
+   * Reset entire DB (dangerous)
    */
   async reset(): Promise<void> {
-    if (!this.db) {
-      throw new Error('Database not initialized');
+    if (!this.SQL) {
+      throw new Error('SQL.js not initialized');
     }
-
-    this.db.close();
-    this.db = new this.SQL!.Database();
-    this.db!.exec(sqliteSchema);
+    if (this.db) {
+      this.db.close();
+    }
+    this.db = new this.SQL.Database();
+    this.db.exec(sqliteSchema);
     await this.save();
     console.log('✅ Database reset complete');
   }
 
-  /**
-   * Close the database connection
-   */
   close(): void {
     if (this.db) {
       this.db.close();
       this.db = null;
-      this.initialized = false;
-      this.initPromise = null;
     }
+    this.initialized = false;
+    this.initPromise = null;
   }
 
-  /**
-   * Get database instance (use with caution)
-   */
   getDatabase(): Database | null {
     return this.db;
   }
 
-  /**
-   * Check if database is initialized
-   */
   isInitialized(): boolean {
     return this.initialized;
   }
 }
 
-// Export singleton instance
+// singleton
 export const sqliteService = new SQLiteService();
 
-// Expose for debugging in browser console
+// expose for debugging
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 ;(window as any).sqliteService = sqliteService;
 
-// Export the class for testing
 export { SQLiteService };
